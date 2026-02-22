@@ -1,5 +1,5 @@
 import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github";
-import { Document } from "@langchain/core/documents";
+import { type Document } from "@langchain/core/documents";
 import { generateEmbedding, summariseCode } from "./gemini";
 import { db } from "@/server/db";
 import { Octokit } from "octokit";
@@ -10,7 +10,7 @@ const getFileCount = async (
   octokit: Octokit,
   githubOwner: string,
   githubRepo: string,
-  acc: number = 0,
+  acc = 0,
 ) => {
   const { data } = await octokit.rest.repos.getContent({
     owner: githubOwner,

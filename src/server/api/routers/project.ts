@@ -86,7 +86,7 @@ export const projectRouter = createTRPCRouter({
           filesReferences: input.filesReferences,
           projectId: input.projectId,
           question: input.question,
-          userId: ctx.user.userId,
+          userId: ctx.user.userId!,
         },
       });
     }),

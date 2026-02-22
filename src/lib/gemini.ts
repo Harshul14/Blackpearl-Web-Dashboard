@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai"; // 19k (gzipped: 5.7k)
-import { Document } from "@langchain/core/documents";
+import { type Document } from "@langchain/core/documents";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const model = genAI.getGenerativeModel({

@@ -73,7 +73,7 @@ const MeetingCard = () => {
               processMeeting.mutateAsync({
                 meetingUrl: downloadUrl,
                 meetingId: meeting.id,
-                projectId: project.id,
+                projectId: project.project!.id,
               });
             },
             onError: () => {

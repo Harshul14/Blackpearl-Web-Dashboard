@@ -10,7 +10,7 @@ import React from "react";
 const BillingPage = () => {
   const { data: user } = api.project.getMyCredits.useQuery();
   const [creditsToBuy, setCreditsToBuy] = React.useState<number[]>([100]);
-  const creditsToBuyAmount = creditsToBuy[0];
+  const creditsToBuyAmount = creditsToBuy[0] ?? 100;
   const price = (creditsToBuyAmount / 50).toFixed(2);
 
   return (

@@ -1,7 +1,7 @@
 import { processMeeting } from "@/lib/assembly";
 import { db } from "@/server/db";
 import { auth } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const bodyParser = z.object({

@@ -8,15 +8,13 @@ import { cn } from "@/lib/utils"
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
 
-export type ChartConfig = {
-  [k in string]: {
+export type ChartConfig = Record<string, {
     label?: React.ReactNode
     icon?: React.ComponentType
   } & (
     | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }
-  )
-}
+  )>
 
 type ChartContextProps = {
   config: ChartConfig
@@ -118,8 +116,10 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
+}: Omit<React.ComponentProps<typeof RechartsPrimitive.Tooltip>, "payload" | "label"> &
   React.ComponentProps<"div"> & {
+    payload?: any[]
+    label?: any
     hideLabel?: boolean
     hideIndicator?: boolean
     indicator?: "line" | "dot" | "dashed"
@@ -138,7 +138,7 @@ function ChartTooltipContent({
     const itemConfig = getPayloadConfigFromPayload(config, item, key)
     const value =
       !labelKey && typeof label === "string"
-        ? config[label as keyof typeof config]?.label || label
+        ? config[label]?.label || label
         : itemConfig?.label
 
     if (labelFormatter) {
@@ -179,7 +179,7 @@ function ChartTooltipContent({
     >
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
-        {payload.map((item, index) => {
+        {payload.map((item: any, index: number) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
           const indicatorColor = color || item.payload.fill || item.color
@@ -257,7 +257,9 @@ function ChartLegendContent({
   verticalAlign = "bottom",
   nameKey,
 }: React.ComponentProps<"div"> &
-  Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+  Omit<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
+    payload?: any[]
+    verticalAlign?: "top" | "middle" | "bottom"
     hideIcon?: boolean
     nameKey?: string
   }) {
@@ -275,7 +277,7 @@ function ChartLegendContent({
         className
       )}
     >
-      {payload.map((item) => {
+      {payload.map((item: any) => {
         const key = `${nameKey || item.dataKey || "value"}`
         const itemConfig = getPayloadConfigFromPayload(config, item, key)
 
@@ -340,7 +342,7 @@ function getPayloadConfigFromPayload(
 
   return configLabelKey in config
     ? config[configLabelKey]
-    : config[key as keyof typeof config]
+    : config[key]
 }
 
 export {

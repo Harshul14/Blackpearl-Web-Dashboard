@@ -63,7 +63,7 @@ export const pollCommits = async (projectId: string) => {
   });
   const summaries = summaryResponses.map((response) => {
     if (response.status === "fulfilled") {
-      return response.value as string;
+      return response.value;
     }
     return "";
   });
@@ -74,11 +74,11 @@ export const pollCommits = async (projectId: string) => {
 
       return {
         projectId,
-        commitHash: unporcessedCommits[index]?.commitHash,
-        commitMessage: unporcessedCommits[index]?.commitMessage,
-        commitAuthorName: unporcessedCommits[index]?.commitAuthorName,
-        commitAuthorAvatar: unporcessedCommits[index]?.commitAuthorAvatar,
-        commitDate: unporcessedCommits[index]?.commitDate,
+        commitHash: unporcessedCommits[index]?.commitHash ?? "",
+        commitMessage: unporcessedCommits[index]?.commitMessage ?? "",
+        commitAuthorName: unporcessedCommits[index]?.commitAuthorName ?? "",
+        commitAuthorAvatar: unporcessedCommits[index]?.commitAuthorAvatar ?? "",
+        commitDate: unporcessedCommits[index]?.commitDate ? new Date(unporcessedCommits[index].commitDate) : new Date(),
         summary,
       };
     }),
@@ -97,7 +97,7 @@ async function summariseCommit(githubUrl: string, commitHash: string) {
     },
   });
 
-  return aISummariseCommit(data) || "";
+  return (await aISummariseCommit(data)) || "";
 }
 
 async function fetchProjectGithubUrl(projectId: string) {

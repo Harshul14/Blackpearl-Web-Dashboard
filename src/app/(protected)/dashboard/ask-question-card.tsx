@@ -13,7 +13,7 @@ import useProject from "@/hooks/use-project";
 import Image from "next/image";
 import React from "react";
 import { askQuestion } from "./actions";
-import { readStreamableValue } from "ai/rsc";
+
 import CodeReferences from "./code-references";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
@@ -39,12 +39,7 @@ const AskQuestionCard = () => {
     const { output, filesReferences } = await askQuestion(question, project.id);
     setOpen(true);
     setFilesReferences(filesReferences);
-
-    for await (const delta of readStreamableValue(output)) {
-      if (delta) {
-        setAnswer((ans) => ans + delta);
-      }
-    }
+    setAnswer(output);
     setLoading(false);
   };
   const refetch = useRefetch();

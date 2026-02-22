@@ -6,12 +6,12 @@ import { NextRequest, NextResponse } from "next/server"; // 62.7k (gzipped: 20.5
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-03-31.basil",
+  apiVersion: "2026-01-28.clover",
 });
 
 export async function POST(request: Request) {
   const body = await request.text();
-  const signature = (await headers()).get("Stripe-Signature") as string;
+  const signature = (await headers()).get("Stripe-Signature")!;
   let event: Stripe.Event;
 
   try {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   console.log(event.type);
 
   if (event.type === "checkout.session.completed") {
-    const credits = Number(session.metadata?.["credits"]);
+    const credits = Number(session.metadata?.credits);
     const userId = session.client_reference_id;
 
     if (!userId || !credits) {

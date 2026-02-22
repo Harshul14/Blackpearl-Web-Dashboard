@@ -1,6 +1,5 @@
 "use server";
-import { streamText } from "ai";
-import { createStreamableValue } from "ai/rsc";
+import { generateText } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateEmbedding } from "@/lib/gemini";
 import { db } from "@/server/db";
@@ -10,7 +9,6 @@ const google = createGoogleGenerativeAI({
 });
 
 export async function askQuestion(question: string, projectId: string) {
-  const stream = createStreamableValue();
   const queryVector = await generateEmbedding(question);
   const vectorQuery = `[${queryVector.join(",")}]`;
 
@@ -31,10 +29,9 @@ export async function askQuestion(question: string, projectId: string) {
     summary of file: ${doc.summary}\n\n`;
   }
 
-  (async () => {
-    const { textStream } = await streamText({
-      model: google("gemini-2.0-flash"),
-      prompt: `
+  const { text } = await generateText({
+    model: google("gemini-2.0-flash") as any,
+    prompt: `
         You are an AI code assistant who answers questions about the codebase. Your target audience is a technical intern.
         AI assistant is a brand new, powerful, human-like artificial intelligence.
         
@@ -57,14 +54,9 @@ export async function askQuestion(question: string, projectId: string) {
         AI assistant will not invent anything that is not drawn directly from the context.
         Answer in markdown syntax, with code snippets if needed. Be as detailed as possible when answering, make sure to provide a complete answer.
         `,
-    });
-    for await (const delta of textStream) {
-      stream.update(delta);
-    }
-    stream.done();
-  })();
+  });
   return {
-    output: stream.value,
+    output: text,
     filesReferences: result,
   };
 }
