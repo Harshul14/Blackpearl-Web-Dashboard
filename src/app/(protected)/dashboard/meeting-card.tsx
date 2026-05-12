@@ -2,7 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { useDropzone } from "react-dropzone"; // 61.2k (gzipped: 17.1k)
 import React from "react"; // 6.9k (gzipped: 2.7k)
-import { uploadFile } from "@/lib/firebase";
+import { uploadFile } from "@/providers/storage/supabase.provider";
 import { Presentation, Upload, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
@@ -155,3 +155,4 @@ const MeetingCard = () => {
 };
 
 export default MeetingCard;
+

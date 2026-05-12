@@ -11,3 +11,4 @@ export default async function Home() {
   // If signed in, redirect to dashboard
   redirect("/dashboard");
 }
+

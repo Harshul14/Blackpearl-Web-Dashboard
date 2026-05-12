@@ -1,6 +1,6 @@
 "use client";
 import useProject from "@/hooks/use-project";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { api } from "@/trpc/react";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -60,3 +60,4 @@ const CommitLog = () => {
 };
 
 export default CommitLog;
+

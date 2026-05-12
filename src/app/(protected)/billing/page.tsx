@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { createCheckoutSession } from "@/lib/stripe";
+import { createCheckoutSession } from "@/services/stripe.service";
 import { api } from "@/trpc/react";
 import { Info } from "lucide-react";
 import React from "react";
@@ -55,3 +55,4 @@ const BillingPage = () => {
 };
 
 export default BillingPage;
+

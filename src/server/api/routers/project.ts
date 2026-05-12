@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-import { create } from "domain";
-import { use } from "react";
-import { pollCommits } from "@/lib/github";
-import { checkCredits, indexGithubRepo } from "@/lib/github-loader";
+import { githubService } from "@/services/github.service";
 
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
@@ -23,7 +20,7 @@ export const projectRouter = createTRPCRouter({
         throw new Error("User not Found");
       }
       const currentCredits = user.credits || 0;
-      const fileCount = await checkCredits(input.githubUrl, input.githubToken);
+      const fileCount = await githubService.checkCredits(input.githubUrl);
       if (currentCredits < fileCount) {
         throw new Error("Insufficient credits");
       }
@@ -38,8 +35,8 @@ export const projectRouter = createTRPCRouter({
           },
         },
       });
-      await indexGithubRepo(project.id, input.githubUrl, input.githubToken);
-      await pollCommits(project.id);
+      await githubService.indexRepo(project.id, input.githubUrl);
+      await githubService.pollCommits(project.id);
       await ctx.db.user.update({
         where: { id: ctx.user.userId! },
         data: { credits: { decrement: fileCount } },
@@ -65,7 +62,7 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      pollCommits(input.projectId).then().catch(console.error);
+      githubService.pollCommits(input.projectId).then().catch(console.error);
       return await ctx.db.commit.findMany({
         where: { projectId: input.projectId },
       });
@@ -201,7 +198,7 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const fileCount = await checkCredits(input.githubUrl, input.githubToken);
+      const fileCount = await githubService.checkCredits(input.githubUrl);
       const userCredits = await ctx.db.user.findUnique({
         where: { id: ctx.user.userId! },
         select: { credits: true },
@@ -212,3 +209,4 @@ export const projectRouter = createTRPCRouter({
       };
     }),
 });
+

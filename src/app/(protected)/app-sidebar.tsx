@@ -14,7 +14,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import useProject from "@/hooks/use-project";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import {
   Bot,
   CreditCard,
@@ -144,3 +144,4 @@ export function AppSideBar() {
     </Sidebar>
   );
 }
+

@@ -33,3 +33,4 @@ const SyncUser = async () => {
   return redirect("/dashboard");
 };
 export default SyncUser;
+

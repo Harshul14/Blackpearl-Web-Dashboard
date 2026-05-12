@@ -3,7 +3,7 @@ import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { lucario } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 
 type Props = {
   filesReferences: { fileName: string; sourceCode: string; summary: string }[];
@@ -49,3 +49,4 @@ const CodeReferences = ({ filesReferences }: Props) => {
 };
 
 export default CodeReferences;
+

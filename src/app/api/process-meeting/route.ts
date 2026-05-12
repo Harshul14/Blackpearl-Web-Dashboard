@@ -1,4 +1,4 @@
-import { processMeeting } from "@/lib/assembly";
+import { meetingService } from "@/services/meeting.service";
 import { db } from "@/server/db";
 import { auth } from "@clerk/nextjs/server";
 import { type NextRequest, NextResponse } from "next/server";
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { meetingUrl, projectId, meetingId } = bodyParser.parse(body);
-    const { summaries } = await processMeeting(meetingUrl);
+    const { summaries } = await meetingService.processMeeting(meetingUrl);
 
     await db.issue.createMany({
       data: summaries.map((summary) => ({
@@ -47,3 +47,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

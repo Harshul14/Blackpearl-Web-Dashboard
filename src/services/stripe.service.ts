@@ -3,9 +3,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Stripe from "stripe";
+import { env } from "@/env";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-01-28.clover",
+const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+  apiVersion: "2025-01-27.acacia" as any, // Using a stable version or keeping original if shimmed
 });
 
 export async function createCheckoutSession(credits: number) {
@@ -30,8 +31,8 @@ export async function createCheckoutSession(credits: number) {
     ],
     customer_creation: "always",
     mode: "payment",
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/create`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing`,
+    success_url: `${env.NEXT_PUBLIC_APP_URL}/create`,
+    cancel_url: `${env.NEXT_PUBLIC_APP_URL}/billing`,
     client_reference_id: userId.toString(),
     metadata: {
       credits,
@@ -40,3 +41,4 @@ export async function createCheckoutSession(credits: number) {
 
   return redirect(session.url!);
 }
+
