@@ -45,5 +45,28 @@ export class OpenRouterProvider implements ILLMProvider {
       throw new Error(`OpenRouter failed: ${errorMessage}`);
     }
   }
+
+  async generateEmbedding(text: string): Promise<number[]> {
+    try {
+      const response = await axios.post(
+        "https://openrouter.ai/api/v1/embeddings",
+        {
+          model: env.OPENROUTER_EMBEDDING_MODEL || "openai/text-embedding-3-small",
+          input: text,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data.data[0].embedding;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error?.message || error.message;
+      throw new Error(`OpenRouter embedding failed: ${errorMessage}`);
+    }
+  }
 }
 

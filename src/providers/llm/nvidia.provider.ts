@@ -68,4 +68,30 @@ export class NvidiaProvider implements ILLMProvider {
       throw new Error(`NVIDIA failed: ${errorMessage}`);
     }
   }
+
+  async generateEmbedding(text: string): Promise<number[]> {
+    try {
+      const response = await axios.post(
+        "https://integrate.api.nvidia.com/v1/embeddings",
+        {
+          model: env.NVIDIA_EMBEDDING_MODEL || "nvidia/nv-embedqa-mistral-7b-v2",
+          input: [text],
+          encoding_format: "float",
+          input_type: "query",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      return response.data.data[0].embedding;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error?.message || error.message;
+      throw new Error(`NVIDIA embedding failed: ${errorMessage}`);
+    }
+  }
 }
