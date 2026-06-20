@@ -1,0 +1,87 @@
+flowchart TB
+  subgraph "Browser (Client)"
+    React["Next.js App (src/app)"]:::frontend
+    UI["Shared UI Library (src/components/ui)"]:::frontend
+    Hooks["Custom Hooks (src/hooks)"]:::frontend
+    TRPCReact["tRPC React Client (src/trpc/react.tsx)"]:::frontend
+    QueryClient["tRPC Query Client (src/trpc/query-client.ts)"]:::frontend
+  end
+
+  subgraph "Next.js Server"
+    Middleware["Auth Middleware (src/middleware.ts)"]:::server
+    TRPCServer["tRPC Server Setup (src/trpc/server.ts)"]:::server
+    TRPCRoot["tRPC Root API (src/server/api/root.ts)"]:::server
+    Routers["tRPC Routers (src/server/api/routers)"]:::server
+    API_Process["Process Meeting API (src/app/api/process-meeting/route.ts)"]:::server
+    API_Stripe["Stripe Webhook API (src/app/api/webhook/stripe/route.ts)"]:::server
+    API_tRPCRoute["tRPC Endpoint (src/app/api/trpc/[trpc]/route.ts)"]:::server
+  end
+
+  subgraph "Data Layer"
+    DBSchema["Prisma Schema (prisma/schema.prisma)"]:::db
+    DBClient["Database Client (src/server/db.ts)"]:::db
+  end
+
+  subgraph "External Services"
+    Stripe["Stripe"]:::external
+    GitHubAPI["GitHub API"]:::external
+    Firebase["Firebase"]:::external
+    Gemini["Gemini AI"]:::external
+  end
+
+  %% Client flows
+  React -->|uses| UI
+  React -->|uses| Hooks
+  React -->|uses| TRPCReact
+  React -->|uses| QueryClient
+  TRPCReact -->|calls| API_tRPCRoute
+  QueryClient -->|calls| API_tRPCRoute
+
+  %% API routing
+  API_tRPCRoute -->|routes to| TRPCServer
+  TRPCServer -->|imports| TRPCRoot
+  TRPCRoot -->|includes| Routers
+  Routers -->|queries| DBClient
+  DBClient -->|defined by| DBSchema
+
+  React -->|SSR data fetch| DBClient
+
+  %% Billing flow
+  React -->|POST /api/webhook/stripe| API_Stripe
+  API_Stripe -->|updates| DBClient
+  API_Stripe -->|notifies| Stripe
+
+  %% Meeting processing
+  React -->|POST /api/process-meeting| API_Process
+  API_Process -->|invokes| Gemini
+  Gemini -->|returns results| API_Process
+  API_Process -->|writes| DBClient
+
+  %% GitHub integration
+  TRPCRoot -->|calls| GitHubAPI
+  GitHubAPI -->|returns metadata| Routers
+
+  %% Auth middleware
+  React -->|edge auth| Middleware
+  Middleware -->|protects| API_tRPCRoute
+
+  classDef frontend fill:#ADD8E6,stroke:#000,color:#000;
+  classDef server fill:#90EE90,stroke:#000,color:#000;
+  classDef db fill:#FFA500,stroke:#000,color:#000;
+  classDef external fill:#DDA0DD,stroke:#000,color:#000;
+
+  %% Click events
+  click React "https://github.com/harshul14/blackpearl/tree/master/src/app"
+  click UI "https://github.com/harshul14/blackpearl/tree/master/src/components/ui"
+  click Hooks "https://github.com/harshul14/blackpearl/tree/master/src/hooks"
+  click TRPCReact "https://github.com/harshul14/blackpearl/blob/master/src/trpc/react.tsx"
+  click QueryClient "https://github.com/harshul14/blackpearl/blob/master/src/trpc/query-client.ts"
+  click Middleware "https://github.com/harshul14/blackpearl/blob/master/src/middleware.ts"
+  click TRPCServer "https://github.com/harshul14/blackpearl/blob/master/src/trpc/server.ts"
+  click TRPCRoot "https://github.com/harshul14/blackpearl/blob/master/src/server/api/root.ts"
+  click Routers "https://github.com/harshul14/blackpearl/tree/master/src/server/api/routers"
+  click API_Process "https://github.com/harshul14/blackpearl/blob/master/src/app/api/process-meeting/route.ts"
+  click API_Stripe "https://github.com/harshul14/blackpearl/blob/master/src/app/api/webhook/stripe/route.ts"
+  click API_tRPCRoute "https://github.com/harshul14/blackpearl/blob/master/src/app/api/trpc/[trpc]/route.ts"
+  click DBSchema "https://github.com/harshul14/blackpearl/blob/master/prisma/schema.prisma"
+  click DBClient "https://github.com/harshul14/blackpearl/blob/master/src/server/db.ts"

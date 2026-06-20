@@ -1,0 +1,74 @@
+Based on the information provided in the sources, the high-level design of the BlackPearl system can be represented by identifying its main components, their responsibilities, and their interactions. The system's core function revolves around processing code and meeting data using AI and facilitating team collaboration, all managed through a credit-based billing system.
+
+Here is a text-based representation of the system's high-level components and their connections, drawing on the details from sources,, and:
+
+```
++-----------------+
+|      User       |  <-- The user interacts with the system.
++-----------------+
+        |
+        v
++-----------------------+
+|   User Interface (UI) |  <-- The primary point of user interaction. Allows users to connect repos, ask questions, upload meetings, collaborate, manage projects, and buy credits.
++-----------------------+
+        |
+        -----------------------------------------------------------------------
+        |                  |                       |                       |
+        v                  v                       v                       v
++-----------------+  +---------------------+ +---------------------+ +-----------------------+
+|  Repository     |  |  Meeting Processor  | |  Collaboration/     | |    Billing/Credit     |
+|  Connector      |  |  (Uploads Audio)    | |  Project Management | |    Management System  |
+|          |  |              | |              | |             |
+|  **Key Responsibilities:** |  **Key Responsibilities:** |  **Key Responsibilities:** |  **Key Responsibilities:** |
+|  - Links GitHub Repositories.|  - Handles uploaded meeting |  - Invite Team Members.|  - Facilitates Credit Purchases |
+|  - Takes Repository URL and|    audio files (MP3, WAV,   |  - Track GitHub Commits. |      via Stripe.    |
+|    optional Token as input. |    M4A).          |  - Manage Projects.  |  - Manages Credit Balance.|
++-----------------+  +---------------------+ |  - Supports Seamless Team|  - Credits are Consumed |
+        |                                    |    Collaboration. |      per File Indexed.|
+        |                                    +---------------------+ |  - Credit Pricing is $0.02 |
+        v                                              ^             |      per credit.   |
++-----------------+                                    |             +-----------------------+
+|  File Indexer   |  <---------------------------------|- Displays Commit Log Visualization
+|          |                                    |
+|  **Key Responsibilities:** |  <---------------------------------|-- User interaction for collaboration/management
+|  - Indexes Files from the|                                    |
+|    connected Repository.|                                    |
+|  - Each file indexed **Consumes**|                                    |
+|    **one Credit**. |                                    |
++-----------------+                                    |
+        |                                              |
+        -----------------------------------------------------------------------
+        |                                              |
+        v                                              v
++---------------------------------+          +---------------------+
+|      Knowledge Base/Data        |          |     AI Engine       |
+|        Storage           |          | (Google Gen AI) |
+|  **Key Responsibilities:**      | <------->|  **Key Responsibilities:** |
+|  - Stores Indexed Code Data.|          |  - **Analyzes Codebases** using |
+|  - Stores Extracted Meeting     |          |    indexed file data.|
+|    Insights/Action Items.|          |  - Answers natural language |
+|  - Can Save AI Answers.     |          |    questions about code.|
++---------------------------------+          |  - **Analyzes Meetings** to |
+        ^                                    |    extract insights/actions.|
+        |                                    |  - Powered by Google Generative|
+        ---------------------------------------    AI.             |
+                          |                  |                       +---------------------+
+                          v                  v                       ^
+                 (Indexed Code Data) (Meeting Audio Data) (User Queries)
+```
+
+**Explanation of Components and Flows:**
+
+1.  **User:** The external actor who interacts with the BlackPearl system.
+2.  **User Interface (UI):** The presentation layer where users initiate actions like connecting repositories, asking code questions, uploading meetings, inviting team members, and purchasing credits. It acts as the gateway to all BlackPearl functionalities.
+3.  **Repository Connector:** Handles the initial step of linking a user's GitHub repository by taking a URL and token. It integrates with the external GitHub platform.
+4.  **File Indexer:** Receives data from the Repository Connector and processes the files within the connected repository. **Crucially, this action consumes credits**, with each file using one credit. The indexed data is prepared for AI analysis.
+5.  **Meeting Processor:** Manages the upload of meeting audio files in supported formats (MP3, WAV, M4A). It prepares this data for analysis by the AI Engine.
+6.  **AI Engine:** This is the core processing unit powered by Google Generative AI. It performs two main analytical tasks:
+    *   **Code Analysis:** It accesses the **Indexed Code Data** from the Knowledge Base to provide precise, context-aware answers to user queries about the codebase.
+    *   **Meeting Analysis:** It receives meeting audio data from the Meeting Processor and extracts insights and action items.
+7.  **Knowledge Base/Data Storage:** This component acts as the persistent storage for the system. It stores the **indexed code data** that the AI uses for context, as well as the **extracted meeting insights and action items**. It also has the capability to store saved AI answers.
+8.  **Collaboration/Project Management:** This module enables team collaboration. It allows users to invite team members, provides features like commit log visualization (tracking commits from the linked GitHub repository), and supports general project management activities. It likely interacts with storage or other components to retrieve relevant project and commit data.
+9.  **Billing/Credit Management System:** Manages the credit system. Users purchase credits securely via Stripe. This system tracks the user's credit balance and is triggered by the File Indexer to consume credits based on the number of files indexed. The cost is fixed per credit ($0.02).
+
+The arrows indicate the primary flow of data and interactions between these components. For example, the User interacts with the UI, which directs actions to the relevant backend components like the Repository Connector or the AI Engine. The File Indexer and Meeting Processor feed data into the AI Engine and the Knowledge Base. The AI Engine draws context from the Knowledge Base. The Billing System is linked to the File Indexer due to credit consumption and interacts with the UI and external Stripe for purchase management. The Collaboration module provides data views like commit logs, likely drawing from the indexed repository data.
